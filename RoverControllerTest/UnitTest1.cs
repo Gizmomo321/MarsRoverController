@@ -24,7 +24,6 @@ namespace RoverControllerTest
             paramRovers.SetMap(ref map, "5 5");
             paramRovers.ConfigureAndAddRover(listRovers, "1 1 E", "LMMM");
             paramRovers.MoveRovers(listRovers, paramRovers.compass, map);
-            //Assert.
             for (int i = 0; i < listRovers.Count; i++)
             {
                 Assert.AreEqual(waitedResults[i], listRovers[i].ToString());
@@ -40,7 +39,6 @@ namespace RoverControllerTest
             paramRovers.ConfigureAndAddRover(listRovers, "1 2 N", "LMLMLMLMM");
             paramRovers.ConfigureAndAddRover(listRovers, "3 3 E", "MMRMMRMRRM");
             paramRovers.MoveRovers(listRovers, paramRovers.compass, map);
-            //Assert.
             for (int i = 0; i < listRovers.Count; i++)
             {
                 Assert.AreEqual(waitedResults[i], listRovers[i].ToString());
@@ -56,7 +54,6 @@ namespace RoverControllerTest
             paramRovers.ConfigureAndAddRover(listRovers, "1 2 N", "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
             paramRovers.ConfigureAndAddRover(listRovers, "1 1 E", "MMMMMMMMMMMMMMMMM");
             paramRovers.MoveRovers(listRovers, paramRovers.compass, map);
-            //Assert.
             for (int i = 0; i < listRovers.Count; i++)
             {
                 Assert.AreEqual(waitedResults[i], listRovers[i].ToString());
