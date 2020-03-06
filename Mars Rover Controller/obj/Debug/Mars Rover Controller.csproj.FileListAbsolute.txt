@@ -3,3 +3,9 @@ C:\Users\Gizmomo\source\repos\Mars Rover Controller\Mars Rover Controller\bin\De
 C:\Users\Gizmomo\source\repos\Mars Rover Controller\Mars Rover Controller\bin\Debug\Mars Rover Controller.pdb
 C:\Users\Gizmomo\source\repos\Mars Rover Controller\Mars Rover Controller\obj\Debug\Mars Rover Controller.exe
 C:\Users\Gizmomo\source\repos\Mars Rover Controller\Mars Rover Controller\obj\Debug\Mars Rover Controller.pdb
+C:\Users\Gizmomo\Documents\MarsRoverController\Mars Rover Controller\bin\Debug\Mars Rover Controller.exe.config
+C:\Users\Gizmomo\Documents\MarsRoverController\Mars Rover Controller\bin\Debug\Mars Rover Controller.exe
+C:\Users\Gizmomo\Documents\MarsRoverController\Mars Rover Controller\bin\Debug\Mars Rover Controller.pdb
+C:\Users\Gizmomo\Documents\MarsRoverController\Mars Rover Controller\obj\Debug\Mars Rover Controller.csprojAssemblyReference.cache
+C:\Users\Gizmomo\Documents\MarsRoverController\Mars Rover Controller\obj\Debug\Mars Rover Controller.exe
+C:\Users\Gizmomo\Documents\MarsRoverController\Mars Rover Controller\obj\Debug\Mars Rover Controller.pdb

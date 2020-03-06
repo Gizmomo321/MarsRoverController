@@ -9,5 +9,6 @@
         string roverMoveInstructions { get; }
         void FaceToDirection(string newFacingDirection);
         void MoveToDirection(int directionX, int DirectionY);
+        string Position();
     }
 }
