@@ -9,11 +9,7 @@ namespace RoverControllerTest
         [TestMethod]        
         public void Test_GoStraight()
         {
-            ParamRovers paramRovers = new ParamRovers();
-            paramRovers.Run();
-            string roverCoordinate="";
-            string result = "5 5 N";
-            Assert.AreEqual(result, roverCoordinate);
+
         }
     }
 }
