@@ -10,5 +10,10 @@
             (x, y, roverFacingDirection, roverMoveInstructions) = (initX, initY, initDirection, moveInstructions);
         public void FaceToDirection(string newFacingDirection) => roverFacingDirection = newFacingDirection;
         public void MoveToDirection(int directionX, int DirectionY) => (x, y) = (x + directionX, y + DirectionY);
+
+        public override string ToString()
+        {
+            return $"{x} {y} {roverFacingDirection}";
+        }
     }
 }

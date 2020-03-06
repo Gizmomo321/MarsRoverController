@@ -11,10 +11,12 @@ namespace Mars_Rover_Controller
 
         //I'll create a tuple array with, for each array, the name of he direction and the x and y coordinate to reach it.
         //for exemple : ("N", 0, 1) : to reach North, we add x + 0, y + 1
-        static (string name, int x, int y)[] compass = { ("N", 0, 1),
+        public (string name, int x, int y)[] compass = { ("N", 0, 1),
                                                       ("E", 1, 0),
                                                       ("S", 0, -1),
                                                       ("W", -1, 0)};
+
+        #region public methods
         public void Run()
         {
             #region variables  
@@ -24,7 +26,6 @@ namespace Mars_Rover_Controller
             bool exit = false;
             string roverCoordinates;
             string roverMoveInstructions;
-            string[] coordinatesArray;
             #endregion
 
             while (true)
@@ -33,7 +34,7 @@ namespace Mars_Rover_Controller
                 tests = new CommandLineTestingTools();
 
                 //first, we get the coordoninates of the plan                   
-                SetMapCoordinates(ref map, ref exit, tests);
+                TestAndSetMapCoordinates(ref map, ref exit, tests);
 
                 if (exit) //we check if the user want to quit the application
                     break;
@@ -50,9 +51,8 @@ namespace Mars_Rover_Controller
                     if ((roverMoveInstructions = GetRoverMoveCommands(tests)).Trim() == "q")
                         break;
 
-                    //now that everything is ok, we get our rover coordinates and moves command
-                    coordinatesArray = roverCoordinates.Split(' ');
-                    roversList.Add(new Rover(int.Parse(coordinatesArray[0]), int.Parse(coordinatesArray[1]), coordinatesArray[2], roverMoveInstructions));
+                    //now that everything is ok, we configure our rover with coordinates and moves command
+                    ConfigureAndAddRover(roversList, roverCoordinates, roverMoveInstructions);
                 }
 
                 Console.WriteLine("Start again ? [Y]es/[N]o");
@@ -62,6 +62,33 @@ namespace Mars_Rover_Controller
 
             //now that we have ourcommands, let's make the rovers move.
             MoveRovers(roversList, compass, map);
+            Console.ReadLine();
+        }
+
+        /// <summary>
+        /// Configure rovers with coordinate and command parameters before adding them to list
+        /// </summary>
+        /// <param name="rovList">list of rovers</param>
+        /// <param name="coord">coordinates</param>
+        /// <param name="mvCommands">movements command</param>
+        public void ConfigureAndAddRover(List<IRover> rovList, string coord, string mvCommands)
+        {
+            if (rovList == null)
+                rovList = new List<IRover>();
+            string [] coordinatesArray = coord.Split(' ');
+            rovList.Add(new Rover(int.Parse(coordinatesArray[0]), int.Parse(coordinatesArray[1]), coordinatesArray[2], mvCommands));
+        }
+
+        /// <summary>
+        /// Set the map
+        /// </summary>
+        /// <param name="thisMap">map to set</param>
+        /// <param name="coordinateCommands">coordinate commands</param>
+        public void SetMap(ref (int x, int y) thisMap, string coordinateCommands)
+        {
+            string[] argArray = coordinateCommands.Split(' ');
+            thisMap.x = int.Parse(argArray[0]);
+            thisMap.y = int.Parse(argArray[1]);
         }
 
         /// <summary>
@@ -69,7 +96,7 @@ namespace Mars_Rover_Controller
         /// </summary>
         /// <param name="compass">array of directions withs coordinates for each of them</param>
         /// <param name="map">coordinates of the map where are the rovers</param>
-        void MoveRovers(List<IRover> roversList, (string name, int x, int y)[] compass, (int x, int y) map)
+        public void MoveRovers(List<IRover> roversList, (string name, int x, int y)[] compass, (int x, int y) map)
         {
             if (roversList == null || roversList.Count <= 0)
                 return;
@@ -101,8 +128,8 @@ namespace Mars_Rover_Controller
                             //we take the new direction from the compass array                            
                             //the rover move to this direction regarding his coordinates. 
                             //Only if the next move don't exceed the map 
-                            if (rover.x < map.x && rover.x > 0 &&
-                                rover.y < map.y && rover.y > 0)
+                            if (rover.x + compass[compassIndex].x <= map.x && rover.x + compass[compassIndex].x >= 0 &&
+                                rover.y + compass[compassIndex].y <= map.y && rover.y + compass[compassIndex].y >= 0)
                                 rover.MoveToDirection(compass[compassIndex].x, compass[compassIndex].y);
                             break;
                         default:
@@ -116,18 +143,20 @@ namespace Mars_Rover_Controller
                     direction = compass[directionIndex].name; //get the new direction
                     rover.FaceToDirection(direction); // and turn the rover
                 }
-                Console.WriteLine($"{rover.x} {rover.y} {rover.roverFacingDirection}");
+                Console.WriteLine(rover.ToString());
+                //Console.WriteLine($"{rover.x} {rover.y} {rover.roverFacingDirection}");
             }
-            Console.ReadLine();
         }
+        #endregion
 
+        #region private methods
         /// <summary>
         /// Get the user input, test if match with the expecteed coordinate and set the map size with the command values
         /// </summary>
         /// <param name="commandline">command line containing the coordinates</param>
         /// <param name="x">maximum x value to set</param>
         /// <param name="y">maximum y value to set</param>
-        void SetMapCoordinates(ref (int x, int y) map, ref bool exit, CommandLineTestingTools tests)
+        void TestAndSetMapCoordinates(ref (int x, int y) map, ref bool exit, CommandLineTestingTools tests)
         {
             Console.WriteLine("enter map coordinates [X] [Y] or q to quit");
             string commandLine = Console.ReadLine();
@@ -142,10 +171,9 @@ namespace Mars_Rover_Controller
                 exit = true;
                 return;
             }
-            string[] argArray = commandLine.Split(' ');
-            map.x = int.Parse(argArray[0]);
-            map.y = int.Parse(argArray[1]);
+            SetMap(ref map, commandLine);
         }
+
 
 
         /// <summary>
@@ -162,7 +190,8 @@ namespace Mars_Rover_Controller
             //If the user type something else than  correct coordinate command or just "q", we continue
             while (commandLine.Trim() != "q" && !tests.isCorrectRangerCoordinate(commandLine, map.x, map.y))
             {
-                Console.WriteLine("Incorrect rover coordinates...please give correct rover coordinates([X][Y][E, W, S or N]) or type [q] to quit");
+                Console.WriteLine("Incorrect rover coordinates... (command error or coordinates exceed the map limit)");
+                Console.WriteLine("Command : ([X] [Y] [E, W, S or N]) or type [q] to quit");
                 commandLine = Console.ReadLine();
             }
             return commandLine;
@@ -187,5 +216,6 @@ namespace Mars_Rover_Controller
 
             return commandLine;
         }
+        #endregion
     }
 }

@@ -1,0 +1,16 @@
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\bin\Debug\RoverControllerTest.dll
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\bin\Debug\RoverControllerTest.pdb
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\bin\Debug\Mars Rover Controller.exe
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.dll
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\bin\Debug\Mars Rover Controller.pdb
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\bin\Debug\Mars Rover Controller.exe.config
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.xml
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\obj\Debug\RoverControllerTest.csprojAssemblyReference.cache
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\obj\Debug\RoverControllerTest.csproj.CopyComplete
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\obj\Debug\RoverControllerTest.dll
+C:\Users\Gizmomo\source\repos\Mars Rover Controller\RoverControllerTest\obj\Debug\RoverControllerTest.pdb

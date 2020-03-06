@@ -1,6 +1,6 @@
 ﻿namespace Mars_Rover_Controller
 {
-    interface IRover
+    public interface IRover
     {
         string roverFacingDirection { get; }
         int x { get; }
