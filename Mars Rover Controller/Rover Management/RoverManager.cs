@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Mars_Rover_Controller
 {
@@ -35,7 +36,7 @@ namespace Mars_Rover_Controller
         /// <summary>
         ///main method of the class  
         /// </summary>
-        public void Run(string[] args, bool areCommandTested = false, int x = 0, int y = 0)
+        public async void Run(string[] args, bool areCommandTested = false, int x = 0, int y = 0)
         {
             map = (x, y);
             testClass = new Tests();
@@ -43,9 +44,12 @@ namespace Mars_Rover_Controller
 
             //Configurations of each rovers from the list of instructions. 
             //If we have an error in the Map of Mars, we quit (happens only if the user didn't come form the main entry)
-            if (ConfigureAndAddRoverToSquad(args, areCommandTested))
-                //now that each rover is configured, let's make the rovers move.
-                MoveAllRovers();
+            ConfigureAndAddRoverToSquad(args, areCommandTested);
+
+            //now that each rover is configured, let's make the rovers move.
+            string strRoversPositionsOutput = await MoveAllRovers();
+
+            Console.WriteLine(strRoversPositionsOutput);
 
         }
         #endregion
@@ -57,7 +61,7 @@ namespace Mars_Rover_Controller
         /// </summary>
         /// <param name="commands">list of commands</param>
         /// <param name="areUserCommandTested">flag to know if commands were tested or not</param>
-        private bool ConfigureAndAddRoverToSquad(string[] commands, bool areUserCommandTested = false)
+        public void ConfigureAndAddRoverToSquad(string[] commands, bool areUserCommandTested = false)
         {
             //if the user didn't came from the main method, testClass will be null
             if (testClass == null) testClass = new Tests();
@@ -67,7 +71,7 @@ namespace Mars_Rover_Controller
             {
                 //if error in the map coordinate, we quit the application (only if the user passed directly from here)
                 if (!testClass.isCorrectMapCoordinate(commands[0])) 
-                    return false;
+                    return;
                 SetMaximumSizeOfTheMap(commands[0]);
             }
             
@@ -92,7 +96,7 @@ namespace Mars_Rover_Controller
                                             coordinatesArray[2],            //Direction
                                             commands[i + 1]));              //Move instructions
             }
-            return true;
+           
         }
 
         /// <summary>
@@ -109,16 +113,20 @@ namespace Mars_Rover_Controller
         /// Make the rovers moves following user inputs
         /// </summary>
         //public async void MoveRovers()
-        public void MoveAllRovers()
+        public async Task<string> MoveAllRovers()
         {
+            string strRoverPositions = "";
             //if nothing in the list, we quit
             if (lstRoverSquad == null || lstRoverSquad.Count <= 0)
-                return;
-            
+                return "";
+
             foreach (IRover rover in lstRoverSquad)
-            {             
-                MoveRover(rover);
+            {
+                await Task.Run(() => MoveRover(rover));
+                strRoverPositions += $"{ rover.Position() }\r\n";
             }
+            //Console.WriteLine(strRoverPositions);
+            return strRoverPositions;
         }
 
         /// <summary>
@@ -127,6 +135,7 @@ namespace Mars_Rover_Controller
         /// <param name="thisRover"></param>
         private void MoveRover(IRover thisRover)
         {
+             
             #region compass algorithm explanation 
             /* This compass is an array of tupple.
              * We get, from the compass, the indice of the tupple where the direction correspond with the actual direction of the rover.
@@ -135,11 +144,12 @@ namespace Mars_Rover_Controller
              * After that, we just have to take the parameters x, y from the selected tupple to know how to move 
              */
             #endregion
-            int compassIndex = Array.IndexOf(compass, compass.First((x) => (x.direction == thisRover.direction)));
+            int compassIndex = Array.IndexOf(compass, compass.First((x) => (x.direction.ToUpper() == thisRover.direction.ToUpper())));
+
             //Each letter is a move. Then we process the command totally before pass to the next rover
             foreach (char c in thisRover.moveInstructions)
             {                
-                switch (c)
+                switch (char.ToUpper(c))
                 {
                     case 'L' when compassIndex > 0:
                         thisRover.FaceToDirection(compass[--compassIndex].direction);
@@ -153,19 +163,19 @@ namespace Mars_Rover_Controller
                     case 'R' when compassIndex == 3:
                         thisRover.FaceToDirection(compass[compassIndex = 0].direction);
                         break;
-                    default:
+                    case 'M':
                         //The selected tupple have the direction and the coordinates needed to move to this direction
                         //We move to this direction only if the next move don't exceed the map 
                         if (thisRover.x + compass[compassIndex].x <= map.maximumX && thisRover.x + compass[compassIndex].x >= 0 &&
                             thisRover.y + compass[compassIndex].y <= map.maximumY && thisRover.y + compass[compassIndex].y >= 0)
                             thisRover.MoveToDirection(compass[compassIndex].x, compass[compassIndex].y);
                         break;
+                    default:
+                        //If a unusual case came, we stop mark this rover as error and pass to the next one
+                        thisRover.PutInErrorCommand();
+                        continue;
                 }
             }
-            
-            //Show the rover position
-            Console.WriteLine(thisRover.Position());
-            //return thisRover.Position();
         }    
         #endregion
     }

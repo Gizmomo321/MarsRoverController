@@ -14,5 +14,11 @@
         public void FaceToDirection(string newFacingDirection) => direction = newFacingDirection;
         public void MoveToDirection(int directionX, int DirectionY) => (x, y) = (x + directionX, y + DirectionY);
         public string Position() => $"{x} {y} {direction}";
+        public void PutInErrorCommand()
+        {
+            x = -99;
+            y = -99;
+            direction = $"error command in {moveInstructions}";
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace Mars_Rover_Controller
         /// <returns>result of test</returns>
         public bool isCorrectMapCoordinate(string commandLine)
         {
-            string[] tabArray = commandLine.Trim().Split(' ');
+            string[] tabArray = commandLine.ToLower().Trim().Split(' ');
             if (tabArray.Length == 2)
                 if (int.TryParse(tabArray[0], out _) && int.TryParse(tabArray[1], out _))
                     return true;
@@ -37,10 +37,10 @@ namespace Mars_Rover_Controller
         public bool isCorrectRangerCoordinate(string commandLine)//, int x, int y)
         {
             string coordinates = "NESW";
-            string[] tabArray = commandLine.Trim().Split(' ');
+            string[] tabArray = commandLine.ToLower().Trim().Split(' ');
             if(tabArray.Length == 3)
                 if (int.TryParse(tabArray[0], out int c) && int.TryParse(tabArray[0], out int d))
-                    if (coordinates.IndexOf(tabArray[2]) > -1)
+                    if (coordinates.ToLower().IndexOf(tabArray[2]) > -1)
                         //if ((c <= x) && (d <= y))
                             return true;
             return false;
@@ -54,8 +54,8 @@ namespace Mars_Rover_Controller
         public bool isCorrectMovesCommand(string commandLine)
         {
             string movesCommand = "LRM";
-            foreach (char c in commandLine)
-                if (movesCommand.IndexOf(c) == -1)
+            foreach (char c in commandLine.ToLower())
+                if (movesCommand.ToLower().IndexOf(c) == -1)
                     return false;
             return true;
         }
