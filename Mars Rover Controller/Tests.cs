@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Mars_Rover_Controller
 {
-    public class CommandLineTestingTools
+    public class Tests
     {
         /// <summary>
-        /// compare the command line with the command expected for the map coordintes and return true if match
+        /// compare the command line with the command expected for the map coordinates and return true if match
         /// </summary>
         /// <param name="commandLine">line to test</param>
         /// <returns>result of test</returns>
@@ -17,7 +17,7 @@ namespace Mars_Rover_Controller
         {
             string[] tabArray = commandLine.Trim().Split(' ');
             if (tabArray.Length == 2)
-                if (int.TryParse(tabArray[0], out int c) && int.TryParse(tabArray[1], out int d))
+                if (int.TryParse(tabArray[0], out _) && int.TryParse(tabArray[1], out _))
                     return true;
             return false;
         }
@@ -43,7 +43,7 @@ namespace Mars_Rover_Controller
         }
 
         /// <summary>
-        /// compare the command line with the command expected for the rover movement and return true if match
+        /// compare the command line with the command expected for the rover move and return true if match
         /// </summary>
         /// <param name="commandLine">line to compare</param>
         /// <returns>result of test</returns>

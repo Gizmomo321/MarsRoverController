@@ -1,5 +1,8 @@
 ﻿namespace Mars_Rover_Controller
 {
+    /// <summary>
+    /// Rover class
+    /// </summary>
     class Rover : IRover
     {
         public int x { get; private set; }

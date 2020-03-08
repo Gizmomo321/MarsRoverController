@@ -11,8 +11,8 @@ namespace Mars_Rover_Controller
     {        
         static void Main(string[] args)
         {
-            ParamRovers roverParam = new ParamRovers();
-            roverParam.Run();
+            MainRoverProgram mainEntry = new MainRoverProgram();
+            mainEntry.Run(args, true);
         }
     }
 }

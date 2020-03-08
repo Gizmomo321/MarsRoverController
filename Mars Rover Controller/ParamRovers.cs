@@ -9,68 +9,49 @@ namespace Mars_Rover_Controller
     public class ParamRovers
     {
 
+        #region global variable
         //I'll create a tuple array with, for each array, the name of he direction and the x and y coordinate to reach it.
         //for exemple : ("N", 0, 1) : to reach North, we add x + 0, y + 1
-        private (string name, int x, int y)[] compass = { ("N", 0, 1),
-                                                      ("E", 1, 0),
-                                                      ("S", 0, -1),
-                                                      ("W", -1, 0)};
+        private (string direction, int x, int y)[] compass = {   ("N", 0, 1),
+                                                            ("E", 1, 0),
+                                                            ("S", 0, -1),
+                                                            ("W", -1, 0)};
 
-        public List<IRover> roversList { get; private set; } //list of rovers
-        public (int x, int y) map { get; private set; } //map
+        private List<string> lstListOfUserCommand;                            //List of user commands
+        public List<IRover> lstRoverSquad { get; private set; }               //list of rovers        
+        public (int maximumX, int maximumY) map { get; private set; }         //map
+        Tests testClass;                                                      //class with tests mthods for commands entered by user 
+        #endregion
 
         #region public methods
+
+        
+        /// <summary>
+        ///main method of the class  
+        /// </summary>
         public void Run()
         {
-            #region variables  
-            CommandLineTestingTools tests;
-            bool exit = false;
-            string mapCoordinates;
-            string roverCoordinates;
-            string roverMoveInstructions;
-            List<string> arrayOfUserComand; //array of command used to configure the rovers
-            #endregion
+            string strMapMaximumSize;
+            testClass = new Tests();
 
-            while (true)
-            {
-                tests = new CommandLineTestingTools();
+            //This method get the user input to set the maximum size of the map
+            if ((strMapMaximumSize = TestMapCoordinateCommand()) == "q")
+                return;
 
-                //first, we get the coordinates of the plan (if the result is "q", we quit)                   
-                if ((mapCoordinates = TestMapCoordinateCommand(tests)) == "q")
-                    break;
+            //Set the maximum size of the map from now because we need it to test the rover coordinates limit
+            SetMaximumSizeOfTheMap(strMapMaximumSize);
 
-                SetMap(mapCoordinates); //we set the map from here because we need it to test the rover coordinate limit
+            //Add the map to the list of command
+            lstListOfUserCommand = new List<string>();
+            lstListOfUserCommand.Add(strMapMaximumSize);
 
-                arrayOfUserComand = new List<string>();
-                arrayOfUserComand.Add(mapCoordinates);  //add the map to the list of command
+            //Now, let's take from the user the instructions for each rovers
+            getAndAddUserCommandsToList(lstListOfUserCommand);
 
-                //After that, we set coordinate and moves for each rover until the user want to stop
-                Console.WriteLine("Informations for each rover...");
-                while (!exit)
-                {
-                    //GetRoverCoordinate get the user input, test it and return the resultas a string. If the user input is a "q" , that means we stop here
-                    if ((roverCoordinates = GetRoverCoordinates(tests)).Trim() == "q")
-                        break;
+            //Configurations of each rovers from the list of instructions
+            ConfigureRoverAndAddItToSQuad(lstListOfUserCommand.ToArray(), true);
 
-                    //GetRoverMoveCommands does the same for the moves instructions...                     
-                    if ((roverMoveInstructions = GetRoverMoveCommands(tests)).Trim() == "q")
-                        break;
-
-                    //now that everything is ok, we configure our rover with coordinates and moves command
-                    arrayOfUserComand.Add(roverCoordinates);
-                    arrayOfUserComand.Add(roverMoveInstructions);                    
-                }
-
-                //we configure our rovers with our commnds. And tell to the method that those commands were tested.
-                ConfigureAndAddRover(arrayOfUserComand.ToArray(), true);
-
-                //In case of we have another map and rovers to configure
-                Console.WriteLine("Start again ? [Y]es/[N]o");
-                if (Console.ReadLine().ToLower() == "n")
-                    break;
-            }
-
-            //now that we have our commands, let's make the rovers move.
+            //now that each rover is configured, let's make the rovers move.
             MoveRovers();
             Console.ReadLine();
         }
@@ -80,33 +61,38 @@ namespace Mars_Rover_Controller
         /// If user commands are not alread tested, we'll test them here (that means users didn't pass from the main methpd)
         /// </summary>
         /// <param name="commands">list of commands</param>
-        /// <param name="areCommandsTested">flag to know if command were tested or not</param>
-        public void ConfigureAndAddRover(string[] commands, bool areCommandsTested = false)
+        /// <param name="areUserCommandTested">flag to know if command were tested or not</param>
+        public void ConfigureRoverAndAddItToSQuad(string[] commands, bool areUserCommandTested = false)
         {
-            CommandLineTestingTools test = new CommandLineTestingTools();
+            //if the user didn't came from the main method, testClass will be null
+            if (testClass == null) testClass = new Tests();
 
             //we set the map only if the user passed directly by this method and if the command is correct
-            if (!areCommandsTested)
+            if (!areUserCommandTested)
             {
-                if (!test.isCorrectMapCoordinate(commands[0])) //if error in the map coordinate : we quit
+                //if error in the map coordinate, we quit the application (only if the user passed directly from here)
+                if (!testClass.isCorrectMapCoordinate(commands[0])) 
                     return;
-                SetMap(commands[0]);
+                SetMaximumSizeOfTheMap(commands[0]);
             }
             
             //now, the rovers.
-            roversList = new List<IRover>();   
-            
-            //if there's an error in one of the command for each rover, we don't add it to the list.
+            lstRoverSquad = new List<IRover>();   
+                        
             for (int i = 1; i < commands.Length; i += 2)            
             {
-                //if commands are not tested (then if the user passed directly by this method), we process only correct pairs of parameters
-                if (!areCommandsTested)
+                //if commands are not tested (then if the user passed directly by this method), for each rover, if the coordinates 
+                //or move instructions are incorrect, we don't add it to the list.
+                if (!areUserCommandTested)
                 {
-                    if (!test.isCorrectRangerCoordinate(commands[i], map.x, map.y) || !test.isCorrectMovesCommand(commands[i + 1]))
+                    if (!testClass.isCorrectRangerCoordinate(commands[i], map.maximumX, map.maximumY) || !testClass.isCorrectMovesCommand(commands[i + 1]))
                         continue;
                 }
-                string[] coordinatesArray = commands[i].Split(' ');
-                roversList.Add(new Rover(int.Parse(coordinatesArray[0]), int.Parse(coordinatesArray[1]), coordinatesArray[2], commands[i+1]));
+                string[] coordinatesArray = commands[i].Split(' ');      
+                lstRoverSquad.Add(new Rover(int.Parse(coordinatesArray[0]), //X
+                                            int.Parse(coordinatesArray[1]), //Y
+                                            coordinatesArray[2],            //Direction
+                                            commands[i+1]));                //Move instructions
             }
         }
 
@@ -114,7 +100,7 @@ namespace Mars_Rover_Controller
         /// Set the map
         /// </summary>
         /// <param name="coordinateCommands">coordinates</param>
-        public void SetMap(string coordinateCommands)
+        public void SetMaximumSizeOfTheMap(string coordinateCommands)
         {
             string[] argArray = coordinateCommands.Split(' ');
             map = (int.Parse(argArray[0]), int.Parse(argArray[1]));
@@ -125,96 +111,130 @@ namespace Mars_Rover_Controller
         /// </summary>
         public void MoveRovers()
         {
-            if (roversList == null || roversList.Count <= 0)
+            //if nothing in the list, we quit
+            if (lstRoverSquad == null || lstRoverSquad.Count <= 0)
                 return;
 
-            foreach (IRover rover in roversList)
-            {
-                //we get, from the compass, the indice of the actual direction of the rover.
-                //we'll increase or decrease it by one to pass to the next direction following the user command line.
-                //Exemple : [N,E,S,W]... the indice of E is 1... if we turn left, we decrease : 1-1 = 0 and the direction of the indice 0 is N
-                int compassIndex = Array.IndexOf(compass, compass.First((x) => (x.name == rover.roverFacingDirection)));
-                string direction = "";
-
-                foreach (char c in rover.roverMoveInstructions)
-                {
-                    //each letter is a move. Then we rocess the command totally before pass to the next rover
-                    switch (c)
-                    {
-                        case 'L':
-                            compassIndex--; //we decrease the indice in the compass array
-                            if (compassIndex < 0) compassIndex = 3;
-                            turnToDirection(compassIndex); //turn the rover
-                            break;
-                        case 'R':
-                            compassIndex++; //we increase the indice of the compass array
-                            if (compassIndex > 3) compassIndex = 0;
-                            turnToDirection(compassIndex); //turn the rover
-                            break;
-                        case 'M':
-                            //we take the new direction from the compass array                            
-                            //the rover move to this direction regarding his coordinates. 
-                            //Only if the next move don't exceed the map 
-                            if (rover.x + compass[compassIndex].x <= map.x && rover.x + compass[compassIndex].x >= 0 &&
-                                rover.y + compass[compassIndex].y <= map.y && rover.y + compass[compassIndex].y >= 0)
-                                rover.MoveToDirection(compass[compassIndex].x, compass[compassIndex].y);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
-                //inside function just to make the rover turn
-                void turnToDirection(int directionIndex)
-                {
-                    direction = compass[directionIndex].name; //get the new direction
-                    rover.FaceToDirection(direction); // and turn the rover
-                }
-                Console.WriteLine(rover.Position());
-                //Console.WriteLine($"{rover.x} {rover.y} {rover.roverFacingDirection}");
+            foreach (IRover rover in lstRoverSquad)
+            {                
+                MoveRover(rover);
             }
         }
         #endregion
 
         #region private methods
+
         /// <summary>
-        /// Get the user input, test if match with the expecteed coordinate and set the map
+        /// Move the selected rover
+        /// </summary>
+        /// <param name="thisRover"></param>
+        private void MoveRover(IRover thisRover)
+        {
+            #region compass algorithm explanation 
+            /* This compass is an array of tupple.
+             * We get, from the compass, the indice of the tupple where the direction correspond with the actual direction of the rover.
+             * We'll increase or decrease this index by to pass to the next direction following the user command line.
+             * Exemple : [N,E,S,W]... the index of E is 1... if we turn left, we decrease and pass to N (index 0)
+             * After that, we just have to take the parameters x, y from the selected tupple to know how to move 
+             */
+            #endregion
+            int compassIndex = Array.IndexOf(compass, compass.First((x) => (x.direction == thisRover.direction)));
+
+            //Each letter is a move. Then we process the command totally before pass to the next rover
+            foreach (char c in thisRover.moveInstructions)
+            {                
+                switch (c)
+                {
+                    case 'L' when compassIndex > 0:
+                        thisRover.FaceToDirection(compass[--compassIndex].direction);
+                        break;
+                    case 'L' when compassIndex == 0:
+                        thisRover.FaceToDirection(compass[compassIndex = 3].direction);
+                        break;
+                    case 'R' when compassIndex < 3:
+                        thisRover.FaceToDirection(compass[++compassIndex].direction);
+                        break;
+                    case 'R' when compassIndex == 3:
+                        thisRover.FaceToDirection(compass[compassIndex = 0].direction);
+                        break;
+                    default:
+                        //The selected tupple have the direction and the coordinates needed to move to this direction
+                        //We move to this direction only if the next move don't exceed the map 
+                        if (thisRover.x + compass[compassIndex].x <= map.maximumX && thisRover.x + compass[compassIndex].x >= 0 &&
+                            thisRover.y + compass[compassIndex].y <= map.maximumY && thisRover.y + compass[compassIndex].y >= 0)
+                            thisRover.MoveToDirection(compass[compassIndex].x, compass[compassIndex].y);
+                        break;
+                }
+            }
+            
+            //Show the rover position
+            Console.WriteLine(thisRover.Position());
+        }
+
+
+        /// <summary>
+        /// Get the coordinates et move instructions for each rover and add them to the list of instructions
+        /// </summary>
+        /// <param name="lstListOfUserCommand">command list</param>
+        private void getAndAddUserCommandsToList(List<string> lstListOfUserCommand)
+        {
+            string strRoverCoordinates;
+            string strRoverMoveInstructions;
+
+            Console.WriteLine("Informations for each rover...");
+            while (true)
+            {
+                if ((strRoverCoordinates = GetRoverCoordinates(testClass)).Trim() == "q" || (strRoverMoveInstructions = GetRoverMoveCommands(testClass)).Trim() == "q")
+                    break; //"q" = exit 
+
+                //now that everything is ok, we add coordinates and moves to the list
+                lstListOfUserCommand.Add(strRoverCoordinates);
+                lstListOfUserCommand.Add(strRoverMoveInstructions);
+            }
+        }
+
+
+        /// <summary>
+        /// Get the user input, test if match with the expecteed command and set the map
         /// </summary>
         /// <param name="commandline">command line containing the coordinates</param>
         /// <param name="x">maximum x value to set</param>
         /// <param name="y">maximum y value to set</param>
-        string TestMapCoordinateCommand(CommandLineTestingTools tests)
+        string TestMapCoordinateCommand()
         {
-            Console.WriteLine("enter map coordinates [X] [Y] or q to quit");
+            //if the user didn't came from the main method, testClass will be null
+            if (testClass == null) testClass = new Tests();
+
+            Console.WriteLine("Map maximum size. Command : [maximum_size_x] [maximum_size_y] or [q] to quit");
             string commandLine = Console.ReadLine();
-            while (commandLine.Trim() != "q" && !tests.isCorrectMapCoordinate(commandLine))
+            while (commandLine.Trim() != "q" && !testClass.isCorrectMapCoordinate(commandLine))
             {
-                Console.WriteLine("Incorrect map coordinate... command must be [X] [Y] or type q to quit");
+                Console.WriteLine("Incorrect command. Expected : [maximum_size_x] [maximum_size_y] or [q] to quit");
                 commandLine = Console.ReadLine();
             }            
-
             return commandLine;
         }
 
 
-
         /// <summary>
-        /// Get the user input and test if that it matchs with the expected coordinates command 
-        /// and the rover coordinates don't exceed the map limit
+        /// Get the user input and test if that matches with the expected rover coordinates command         
+        /// Test also if the coordinates of the rover aren't out of map
         /// </summary>
         /// <param name="limitX">horizontal map limit</param>
         /// <param name="limitY">vertical map limit</param>
         /// <returns>user command line</returns>
-        string GetRoverCoordinates(CommandLineTestingTools tests)
+        string GetRoverCoordinates(Tests tests = null)
         {
-            Console.WriteLine("Enter rover coordinates [X] [Y] [E,W,S or N] or just [q] to quit");
+            //if the user didn't came from the main method, testClass will be null
+            if (testClass == null) testClass = tests;
+            Console.WriteLine("Enter rover coordinates. Command : [coordinate X] [coordinate Y] [direction (E,W,S or N)] or [q] to quit");
             string commandLine = Console.ReadLine();
 
-            //If the user type something else than  correct coordinate command or just "q", we continue
-            while (commandLine.Trim() != "q" && !tests.isCorrectRangerCoordinate(commandLine, map.x, map.y))
+            //If the user type something else than correct coordinates command or just "q", we continue
+            while (commandLine.Trim() != "q" && !tests.isCorrectRangerCoordinate(commandLine, map.maximumX, map.maximumY))
             {
                 Console.WriteLine("Incorrect rover coordinates... (command error or coordinates exceed the map limit)");
-                Console.WriteLine("Command : ([X] [Y] [E, W, S or N]) or type [q] to quit");
+                Console.WriteLine("Expected : [coordinate X] [coordinate Y] [direction (E,W,S or N)] or [q] to quit");
                 commandLine = Console.ReadLine();
             }
             return commandLine;
@@ -222,18 +242,21 @@ namespace Mars_Rover_Controller
 
 
         /// <summary>
-        /// Get the user input and test if that it matchs with the expected coordinates command 
+        /// Get the user input and test if that that matches with the expected move command 
         /// </summary>
         /// <returns>user command line</returns>
-        string GetRoverMoveCommands(CommandLineTestingTools tests)
+        string GetRoverMoveCommands(Tests tests = null)
         {
-            Console.WriteLine($"Enter rover move instructions (series of letters among L,R and M)  or just [q] to quit");
+            //if the user didn't came from the main method, testClass will be null
+            if (testClass == null) testClass = tests;
+
+            Console.WriteLine($"Enter rover move instructions [series of letters among L,R and M] or [q] to quit");
             string commandLine = Console.ReadLine();
 
             //If the user type something else than correct moves command or "q", we continue.
             while (commandLine.Trim() != "q" && !tests.isCorrectMovesCommand(commandLine))
             {
-                Console.WriteLine("You must enter correct moves... instrucions must be letters among L, R and M or type [q] to quit");
+                Console.WriteLine("Incorrect move instructions. Expecteed : [series of letters among L,R and M] or [q] to quit");
                 commandLine = Console.ReadLine();
             }
 
