@@ -13,3 +13,4 @@ C:\Users\Gizmomo\Documents\Mars Rover Controllers V2\Mars Rover Controller\bin\D
 C:\Users\Gizmomo\Documents\Mars Rover Controllers V2\Mars Rover Controller\bin\Debug\Mars Rover Controller.pdb
 C:\Users\Gizmomo\Documents\Mars Rover Controllers V2\Mars Rover Controller\obj\Debug\Mars Rover Controller.exe
 C:\Users\Gizmomo\Documents\Mars Rover Controllers V2\Mars Rover Controller\obj\Debug\Mars Rover Controller.pdb
+C:\Users\Gizmomo\Documents\MarsRoverController\Mars Rover Controller\obj\Debug\Mars Rover Controller.csprojAssemblyReference.cache

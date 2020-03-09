@@ -36,7 +36,7 @@ namespace Mars_Rover_Controller
         /// <summary>
         ///main method of the class  
         /// </summary>
-        public async void Run(string[] args, bool areCommandTested = false, int x = 0, int y = 0)
+        public async Task Run(string[] args, bool areCommandTested = false, int x = 0, int y = 0)
         {
             map = (x, y);
             testClass = new Tests();
@@ -49,8 +49,7 @@ namespace Mars_Rover_Controller
             //now that each rover is configured, let's make the rovers move.
             string strRoversPositionsOutput = await MoveAllRovers();
 
-            Console.WriteLine(strRoversPositionsOutput);
-
+            Console.WriteLine(strRoversPositionsOutput.ToUpper());            
         }
         #endregion
 

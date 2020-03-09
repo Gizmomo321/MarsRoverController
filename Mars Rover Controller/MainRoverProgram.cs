@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.IO;
 
 namespace Mars_Rover_Controller
@@ -30,7 +31,9 @@ namespace Mars_Rover_Controller
             }
 
             RoverManager roverManager = new RoverManager();
-            roverManager.Run(args, fromMain, map.x, map.y);
+            Task.Run(() => roverManager.Run(args, fromMain, map.x, map.y));
+            Thread.CurrentThread.Join();  //not the best way but for now that's working... I'll found a way to change this
+
             if (fromMain)
                 Console.ReadLine();
         }
