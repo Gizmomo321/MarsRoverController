@@ -20,6 +20,6 @@ namespace Mars_Rover_Controller
 
         public readonly string strGetRoverMoveInstructionsMessage = "\r\nEnter rover move instructions : ([q] to quit)";
         public readonly string strIncorrectMoveInstructionsMessage = "Incorrect move instructions. Expecteed : [series of letters among L,R and M] or [q] to quit";
-        public readonly string strAskIfUserWantAddAnotherRoverMessage = "\r\nAdd another rover ? [y]/[n]";
+        public readonly string strAskIfUserWantAddAnotherRoverMessage = "\r\nAdd another rover ? [y] to continue or any other letter (or just enter) to quit";
     }
 }

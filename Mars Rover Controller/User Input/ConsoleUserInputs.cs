@@ -73,11 +73,11 @@ namespace Mars_Rover_Controller
         /// <param name="lstListOfUserCommand">command list</param>
         private void GetAndAddUserCommandsToList(List<string> lstListOfUserCommand)
         {
-            string strStopAddingRover = "";
+            string strStopAddingRover = "y";
             string strRoverCoordinates;
             string strRoverMoveInstructions;
             Console.WriteLine("\r\nInformations for each rover...");
-            while (strStopAddingRover.Trim() != "n")
+            while (strStopAddingRover.Trim() == "y")
             {
                 if ((strRoverCoordinates = GetRoverCoordinates(testClass)).Trim() == "q" || (strRoverMoveInstructions = GetRoverMoveCommands(testClass)).Trim() == "q")
                     break; //"q" = exit 

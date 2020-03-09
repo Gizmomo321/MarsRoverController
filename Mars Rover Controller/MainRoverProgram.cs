@@ -32,8 +32,7 @@ namespace Mars_Rover_Controller
 
             RoverManager roverManager = new RoverManager();
             Task.Run(() => roverManager.Run(args, fromMain, map.x, map.y));
-            Thread.CurrentThread.Join();  //not the best way but for now that's working... I'll found a way to change this
-
+            
             if (fromMain)
                 Console.ReadLine();
         }
