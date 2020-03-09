@@ -31,7 +31,7 @@ namespace Mars_Rover_Controller
             }
 
             RoverManager roverManager = new RoverManager();
-            Task.Run(() => roverManager.Run(args, fromMain, map.x, map.y));
+            Task.Run(() => roverManager.Run(args, fromMain, map.x, map.y)); 
             
             if (fromMain)
                 Console.ReadLine();

@@ -49,7 +49,7 @@ namespace Mars_Rover_Controller
             //now that each rover is configured, let's make the rovers move.
             string strRoversPositionsOutput = await MoveAllRovers();
 
-            Console.WriteLine(strRoversPositionsOutput.ToUpper());            
+            Console.WriteLine(strRoversPositionsOutput.ToUpper());             
         }
         #endregion
 

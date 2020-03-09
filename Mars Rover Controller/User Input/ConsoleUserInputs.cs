@@ -84,7 +84,7 @@ namespace Mars_Rover_Controller
 
                 //now that everything is ok, we add coordinates and moves to the list
                 lstListOfUserCommand.Add(strRoverCoordinates);
-                lstListOfUserCommand.Add(strRoverMoveInstructions);
+                lstListOfUserCommand.Add(strRoverMoveInstructions); 
                 
                 //does the user want to add another rover?
                 Console.WriteLine(inputMessages.strAskIfUserWantAddAnotherRoverMessage);
